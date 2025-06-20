@@ -5,10 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import model.entity.userBean;
-
 public class userDAO {
-	public boolean getUserInfo(userBean user) throws SQLException {
+	public boolean getLogin(String name, String password) throws SQLException {
 		
 		String sql = "SELECT id FROM user_tables WHERE name=? AND password=?";
 		boolean loginResult = false ;
@@ -16,8 +14,8 @@ public class userDAO {
 		try (Connection con = ConnectionManager.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql)) {
 
-			 pstmt.setString(1, user.getUserName());
-	         pstmt.setString(2, user.getUserPassword());
+			 pstmt.setString(1, name);
+	         pstmt.setString(2, password);
 	         
 	         ResultSet  rs = pstmt.executeQuery();
 				

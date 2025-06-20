@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.DAO.userDAO;
-import model.entity.userBean;
 
 public class loginServlet extends HttpServlet{
 	@Override
@@ -27,14 +26,10 @@ public class loginServlet extends HttpServlet{
 	    String url = "";
 
 	    try {
-	       userBean webUserInput = new userBean();
-	       
-	       webUserInput.setUserName(userName);
-	       webUserInput.setUserPassword(userPassword);
 	       
 	       userDAO userDAO = new userDAO();
 	       
-	       boolean result = userDAO.getUserInfo(webUserInput);
+	       boolean result = userDAO.getLogin(userName,userPassword);
 
 	            // ユーザーIDとパスワードが一致するユーザーが存在した時
 	            if (result == true) {
