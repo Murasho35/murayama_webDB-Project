@@ -7,8 +7,10 @@ public class productBean {
 	int ProductPrice;
 	int ProductStock;
 	int ProductCtgrId;
+	String ProductCtgrName;
 	
 	
+
 	public productBean() {}
 
 	public int getProductId() {
@@ -51,6 +53,13 @@ public class productBean {
 		ProductCtgrId = productCtgrId;
 	}
 
+	public String getProductCtgrName() {
+		return ProductCtgrName;
+	}
+
+	public void setProductCtgrName(String productCtgrName) {
+		ProductCtgrName = productCtgrName;
+	}
 
 
 	
