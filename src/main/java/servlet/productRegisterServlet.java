@@ -49,7 +49,7 @@ public class productRegisterServlet extends HttpServlet {
 		// 入力値の検証と数値への変換
 		int productPrice = 0;
 		int productStock = 0;
-		int productCategoryId = 0; // デフォルト値は0（カテゴリなしを意味）
+		int productCategoryId = 0; 
 
 		try {
 			productPrice = Integer.parseInt(productPriceStr);
