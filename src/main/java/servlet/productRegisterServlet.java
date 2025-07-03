@@ -33,9 +33,7 @@ public class productRegisterServlet extends HttpServlet {
 		}
 	}
 
-	/**
-	 * POSTリクエストを処理：フォームから送信された商品データをデータベースに登録
-	 */
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8"); // リクエストの文字エンコーディングをUTF-8に設定
