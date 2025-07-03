@@ -93,7 +93,7 @@ public class productDAO {
 				}
 			}
 		}
-		return product; // 取得したproductBeanを返す（見つからなければnull）
+		return product; 
 	}
 
 	public boolean addProduct(productBean product) throws SQLException {
@@ -128,8 +128,8 @@ public class productDAO {
         List<productBean> productList = new ArrayList<>();
 
         // LEFT JOIN を使用して、カテゴリが設定されていない商品も表示
-        String sql = "SELECT product_tables.name AS ProductName, product_tables.price AS Price, product_tables.stock AS Stock, category_tables.name AS CategoryName FROM product_tables LEFT JOIN category_tables ON product_tables.category_id = category_tables.id";
-
+        String sql = "SELECT product_tables.id AS id, product_tables.name AS ProductName, product_tables.price AS Price, product_tables.stock AS Stock, category_tables.name AS CategoryName FROM product_tables LEFT JOIN category_tables ON product_tables.category_id = category_tables.id";
+ 
         try (Connection con = ConnectionManager.getConnection();
              PreparedStatement pstmt = con.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -154,6 +154,3 @@ public class productDAO {
         return productList;
     }
 }
-
-//String sql = "SELECT * FROM product_tables LEFT OUTER JOIN category_tables ON product_tables.category_id = category_tables.id;";
-//結合文メモ

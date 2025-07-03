@@ -29,7 +29,6 @@ public class productRegisterServlet extends HttpServlet {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// エラーが発生した場合はエラーページにリダイレクトするか、エラーメッセージを表示
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "カテゴリ情報の取得中にデータベースエラーが発生しました。");
 		}
 	}
@@ -65,7 +64,7 @@ public class productRegisterServlet extends HttpServlet {
 
 		// productBeanオブジェクトを作成し、取得した値をセット
 		productBean product = new productBean();
-		// ProductIdはデータベースで自動生成されるため、ここではセットしない
+		
 		product.setProductName(productName);
 		product.setProductPrice(productPrice);
 		product.setProductStock(productStock);
@@ -78,8 +77,8 @@ public class productRegisterServlet extends HttpServlet {
 			boolean registrationSuccess = pDao.addProduct(product); // 新しい登録メソッドを想定
 
 			if (registrationSuccess) {
-				// 登録成功ページにリダイレクト
-				response.sendRedirect("productRegisterSuccess.jsp"); // 成功ページのURLに合わせる
+				// 商品一覧ページに飛びたい
+				response.sendRedirect("./productList");
 			} else {
 				// 登録失敗の場合
 				request.setAttribute("errorMessage", "商品の登録に失敗しました。もう一度お試しください。");
