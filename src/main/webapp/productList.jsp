@@ -8,6 +8,8 @@
 <title>商品一覧</title>
 </head>
 <body>
+<h2>商品一覧画面</h2>
+
  <c:if test="${empty productList}">
         <p style="text-align: center;">登録されている商品はありません。</p>
     </c:if>

@@ -153,4 +153,23 @@ public class productDAO {
         }
         return productList;
     }
+	
+	public boolean deleteProduct(int productId)throws SQLException {
+	
+		//beanから値持ってきてupdate文を実行
+				productBean product = new productBean();
+				String sql = "DELETE FROM product_tables WHERE id = ?; ";
+
+				try (Connection con = ConnectionManager.getConnection();
+						PreparedStatement pstmt = con.prepareStatement(sql)) {
+					pstmt.setInt(1, productId);
+
+					int updateResult = pstmt.executeUpdate();
+
+					return updateResult > 0; // 1件以上登録できたらtrueを返す
+
+				}
+	}
+	
+	
 }
