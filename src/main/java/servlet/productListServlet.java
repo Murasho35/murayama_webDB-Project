@@ -16,17 +16,8 @@ import model.entity.productBean;
 @WebServlet("/productList")
 public class productListServlet extends HttpServlet {
 
+
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws IOException, ServletException {
-		processRequest(request, response);
-	}
-
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws IOException, ServletException {
-		processRequest(request, response);
-	}
-
-	public void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		productDAO pDao = new productDAO();
 
@@ -43,5 +34,6 @@ public class productListServlet extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "商品一覧の取得中にデータベースエラーが発生しました。");
 		}
 	}
+
 
 }
