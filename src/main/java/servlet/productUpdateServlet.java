@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
@@ -39,6 +40,14 @@ public class productUpdateServlet extends HttpServlet {
 				productBean productUpdate = pDao.getProductById(productId);
 
 				if (productUpdate != null) {
+					
+					 CategoryBean categoryBean = cDao.getCategoryById(productUpdate.getProductCtgrId());
+			            if (categoryBean != null) {
+			                productUpdate.setProductCtgrName(categoryBean.getCategoryName()); // productBeanにカテゴリ名をセット
+			            } else {
+			                productUpdate.setProductCtgrName("カテゴリなし"); 
+			            }
+					
 					// 取得した商品情報をリクエストスコープにセット
 					request.setAttribute("product", productUpdate);
 					// 商品編集JSPにフォワード
@@ -76,6 +85,8 @@ public class productUpdateServlet extends HttpServlet {
 		String productStockStr = request.getParameter("productStock");
 		String productCategoryIdStr = request.getParameter("productCtgrId");
 
+		List<String> errorMessages = new ArrayList<>();
+
 		// 入力値の検証と数値への変換
 		int productPrice;
 		int productStock;
@@ -99,7 +110,7 @@ public class productUpdateServlet extends HttpServlet {
 			e.printStackTrace();
 			request.getSession().setAttribute("errorMessage", "無効な商品IDが指定されました。");
 			response.sendRedirect("./productList");
-			return; 
+			return;
 		}
 
 		productBean product = new productBean();
@@ -121,11 +132,9 @@ public class productUpdateServlet extends HttpServlet {
 				product.setProductPrice(Integer.parseInt(productPriceStr));
 			} catch (NumberFormatException e) {
 				// 数値変換エラーが発生した場合
-				request.setAttribute("errorMessage", "価格、在庫数、カテゴリIDは数値で入力してください。");
-
+				errorMessages.add("価格は数値で入力してください。");
 			}
-			request.getRequestDispatcher("/productUpdate.jsp").forward(request, response); // ★doGetではなくフォワード★
-            return; // 処理を終了
+
 		}
 
 		//在庫の更新
@@ -134,28 +143,41 @@ public class productUpdateServlet extends HttpServlet {
 			try {
 				product.setProductStock(Integer.parseInt(productStockStr));
 			} catch (NumberFormatException e) {
-				// 数値変換エラーが発生した場合
-				request.setAttribute("errorMessage", "価格、在庫数、カテゴリIDは数値で入力してください。");
-				
+				errorMessages.add("在庫数は数値で入力してください。"); // エラーメッセージをリストに追加
 			}
-			request.getRequestDispatcher("/productUpdate.jsp").forward(request, response); // ★doGetではなくフォワード★
-            return; // 処理を終了
+
 		}
 
 		//カテゴリの更新
 		if (productCategoryIdStr != null && !productCategoryIdStr.isEmpty()) {
 
 			try {
-				product.setProductCtgrId(Integer.parseInt(productCategoryIdStr));
+				productCategoryId = Integer.parseInt(productCategoryIdStr);
+				 if (productCategoryId != 0) { // "0" (変更しない) 以外の値が選択された場合のみ更新
+	                    product.setProductCtgrId(productCategoryId);
+	                }
 			} catch (NumberFormatException e) {
-				// 数値変換エラーが発生した場合
-				request.setAttribute("errorMessage", "価格、在庫数、カテゴリIDは数値で入力してください。");
-				
+				errorMessages.add("カテゴリIDが不正です。"); // エラーメッセージをリストに追加
+
 			}
-			request.getRequestDispatcher("/productUpdate.jsp").forward(request, response); // ★doGetではなくフォワード★
-            return; // 処理を終了
+
 		}
 
+		if (!errorMessages.isEmpty()) {
+            // エラーがある場合、エラーメッセージと入力済みデータをJSPにフォワード
+            request.setAttribute("errorMessages", errorMessages); // 複数形に変更
+            request.setAttribute("product", product); // ユーザーの入力値を保持
+            try { // カテゴリリストも再取得してJSPに渡す
+                List<CategoryBean> categoryList = cDao.getAllCategory();
+                request.setAttribute("categories", categoryList);
+            } catch (SQLException sqle) {
+                sqle.printStackTrace();
+                errorMessages.add("カテゴリ情報の取得中にエラーが発生しました。"); 
+            }
+            request.getRequestDispatcher("/productUpdate.jsp").forward(request, response);
+            return; 
+        }
+		
 		try {
 
 			boolean updateSuccess = pDao.updateProduct(product);
