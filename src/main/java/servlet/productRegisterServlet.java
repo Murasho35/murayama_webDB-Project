@@ -57,7 +57,7 @@ public class productRegisterServlet extends HttpServlet {
 			// 数値変換エラーが発生した場合
 			request.setAttribute("errorMessage", "価格、在庫数、カテゴリIDは数値で入力してください。");
 			doGet(request, response); // エラーメッセージを表示してフォームを再表示
-			return;
+			
 		}
 
 		// productBeanオブジェクトを作成し、取得した値をセット

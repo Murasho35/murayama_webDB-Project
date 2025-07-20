@@ -44,19 +44,29 @@ public class productDAO {
 		}
 	}
 
-	public boolean updateProduct() throws SQLException {
+	public boolean updateProduct(productBean product) throws SQLException {
 
-		//直下のやつはサーブレットでやるか
-		List<productBean> productAndCategoryIdList = new ArrayList<>();
 
 		//beanから値持ってきてupdate文を実行
-		productBean product = new productBean();
-		String sql = "UPDATE product_tables SET category_id = ?  WHERE id = ?; ";
-
+		
+		String sql = "UPDATE product_tables SET name = ?, price = ?, stock = ?, category_id = ? WHERE id = ?;";
+		
 		try (Connection con = ConnectionManager.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql)) {
-			pstmt.setInt(1, product.getProductCtgrId());
-			pstmt.setInt(2, product.getProductId());
+			pstmt.setString(1, product.getProductName());
+			pstmt.setInt(2, product.getProductPrice());
+			pstmt.setInt(3, product.getProductStock());
+			
+			
+			// カテゴリIDの処理：productCtgrIdが0の場合はデータベースにNULLをセット
+            if (product.getProductCtgrId() == 0) {
+                pstmt.setNull(4, Types.INTEGER); // INT型のNULLをセット
+            } else {
+                pstmt.setInt(4, product.getProductCtgrId()); // カテゴリID
+            }
+			
+			
+			pstmt.setInt(5, product.getProductId());
 
 			int updateResult = pstmt.executeUpdate();
 
