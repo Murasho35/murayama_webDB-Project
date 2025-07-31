@@ -59,8 +59,7 @@ public class productUpdateServlet extends HttpServlet {
 
 				}
 			} else {
-				// action="edit"でない、またはproductIdStrがない/空の場合
-				// 例：/productUpdate に直接アクセスされた場合など
+				
 				request.getSession().setAttribute("errorMessage", "無効なリクエストです。編集対象の商品を選択してください。");
 				response.sendRedirect("./productList"); // 商品一覧に戻す
 			}

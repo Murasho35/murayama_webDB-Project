@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
@@ -21,7 +22,7 @@ public class productRegisterServlet extends HttpServlet {
 		try {
 			// 全てのカテゴリを取得してJSPに渡す
 			List<CategoryBean> categoryList = cDao.getAllCategory();
-			
+
 			request.setAttribute("categories", categoryList);
 
 			// 商品登録JSPにフォワード
@@ -33,7 +34,6 @@ public class productRegisterServlet extends HttpServlet {
 		}
 	}
 
-	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8"); // リクエストの文字エンコーディングをUTF-8に設定
@@ -44,25 +44,111 @@ public class productRegisterServlet extends HttpServlet {
 		String productStockStr = request.getParameter("webProductStock");
 		String productCategoryIdStr = request.getParameter("webProductCategory");
 
-		// 入力値の検証と数値への変換
-		int productPrice = 0;
-		int productStock = 0;
-		int productCategoryId = 0; 
+		List<String> errorMessages = new ArrayList<>(); // エラーメッセージをリストで管理
 
-		try {
-			productPrice = Integer.parseInt(productPriceStr);
-			productStock = Integer.parseInt(productStockStr);
-			productCategoryId = Integer.parseInt(productCategoryIdStr);
-		} catch (NumberFormatException e) {
-			// 数値変換エラーが発生した場合
-			request.setAttribute("errorMessage", "価格、在庫数、カテゴリIDは数値で入力してください。");
-			doGet(request, response); // エラーメッセージを表示してフォームを再表示
-			
+		// 入力値の空文字チェック
+
+		boolean hasNameError = false;
+		boolean hasPriceError = false;
+		boolean hasStockError = false;
+		boolean hasCategoryError = false; 
+
+		// 1. 商品名チェック (空の場合)
+		if (productName == null || productName.trim().isEmpty()) {
+			errorMessages.add("商品名を入力してください。");
+			hasNameError = true;
 		}
+
+		// 2. 価格チェック (空の場合 または 半角数字以外の場合)
+		if (productPriceStr == null || productPriceStr.trim().isEmpty()) {
+			errorMessages.add("価格は半角数字を入力してください。"); 
+			hasPriceError = true;
+		} else {
+			try {
+				Integer.parseInt(productPriceStr);
+			} catch (NumberFormatException e) {
+				if (!hasPriceError) { 
+					errorMessages.add("価格は半角数字を入力してください。");
+					hasPriceError = true;
+				}
+			}
+		}
+
+		// 3. 在庫数チェック (空の場合 または 半角数字以外の場合)
+		if (productStockStr == null || productStockStr.trim().isEmpty()) {
+			errorMessages.add("在庫数は半角数字を入力してください。");
+			hasStockError = true;
+		} else {
+			try {
+				Integer.parseInt(productStockStr);
+			} catch (NumberFormatException e) {
+				if (!hasStockError) { 
+					errorMessages.add("在庫数は半角数字を入力してください。");
+					hasStockError = true;
+				}
+			}
+		}
+
+		// 4. カテゴリチェック (空の場合 または 数値変換できない場合)
+		if (productCategoryIdStr == null || productCategoryIdStr.trim().isEmpty()) {
+			errorMessages.add("カテゴリを選択してください。"); 
+			hasCategoryError = true;
+		} else {
+			try {
+				Integer.parseInt(productCategoryIdStr); 
+			} catch (NumberFormatException e) {
+				if (!hasCategoryError) { 
+					errorMessages.add("カテゴリを選択してください。");
+					hasCategoryError = true;
+				}
+			}
+		}
+
+		if (!errorMessages.isEmpty()) {
+			request.setAttribute("errorMessages", errorMessages); 
+
+			categoryDAO cDao = new categoryDAO();
+			try {
+				List<CategoryBean> categoryList = cDao.getAllCategory();
+				request.setAttribute("categories", categoryList);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				errorMessages.add("カテゴリ情報の取得中にデータベースエラーが発生しました。");
+			}
+			productBean inputProduct = new productBean();
+			inputProduct.setProductName(productName);
+			if (!hasPriceError) {
+				try {
+					inputProduct.setProductPrice(Integer.parseInt(productPriceStr));
+				} catch (NumberFormatException ignore) {
+				}
+			}
+			if (!hasStockError) {
+				try {
+					inputProduct.setProductStock(Integer.parseInt(productStockStr));
+				} catch (NumberFormatException ignore) {
+				}
+			}
+			if (!hasCategoryError) {
+				try {
+					inputProduct.setProductCtgrId(Integer.parseInt(productCategoryIdStr));
+				} catch (NumberFormatException ignore) {
+				}
+			}
+			request.setAttribute("product", inputProduct);
+
+			request.getRequestDispatcher("/productRegister.jsp").forward(request, response);
+			return; 
+		}
+
+
+		int productPrice = Integer.parseInt(productPriceStr);
+		int productStock = Integer.parseInt(productStockStr);
+		int productCategoryId = Integer.parseInt(productCategoryIdStr);
 
 		// productBeanオブジェクトを作成し、取得した値をセット
 		productBean product = new productBean();
-		
+
 		product.setProductName(productName);
 		product.setProductPrice(productPrice);
 		product.setProductStock(productStock);
@@ -72,7 +158,7 @@ public class productRegisterServlet extends HttpServlet {
 
 		try {
 
-			boolean registrationSuccess = pDao.addProduct(product); 
+			boolean registrationSuccess = pDao.addProduct(product);
 
 			if (registrationSuccess) {
 				// 商品一覧ページに飛びたい
@@ -80,13 +166,13 @@ public class productRegisterServlet extends HttpServlet {
 			} else {
 				// 登録失敗の場合
 				request.setAttribute("errorMessage", "商品の登録に失敗しました。もう一度お試しください。");
-				doGet(request, response); 
+				doGet(request, response);
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("errorMessage", "データベースエラーが発生しました。入力内容を確認してください。");
-			doGet(request, response); 
+			doGet(request, response);
 		}
 	}
 
