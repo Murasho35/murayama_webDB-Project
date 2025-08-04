@@ -2,7 +2,6 @@ package servlet;
 
 import java.io.IOException;
 
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -22,7 +21,12 @@ public class logoutServlet extends HttpServlet {
 
         // request.logout(); // コンテナ管理のセキュリティを使用している場合のみ必要
 
-        RequestDispatcher dispatch = request.getRequestDispatcher("/logout.jsp");
-        dispatch.forward(request, response);
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
     }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
+
 }

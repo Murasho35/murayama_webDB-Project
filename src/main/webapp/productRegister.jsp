@@ -48,5 +48,10 @@
 			<input type="submit" value="登録">
 		</div>
 	</form>
+	
+	<div style="margin-top: 20px;">
+    <a href="<%= request.getContextPath() %>/productList">
+        <button type="button">戻る</button>
+    </a>
 </body>
 </html>

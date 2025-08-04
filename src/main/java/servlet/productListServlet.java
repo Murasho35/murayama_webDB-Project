@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.DAO.productDAO;
 import model.entity.productBean;
 
@@ -19,6 +20,15 @@ public class productListServlet extends HttpServlet {
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
+		
+		HttpSession session = request.getSession(false); // セッションが存在しない場合は作成しない
+		if (session == null || session.getAttribute("isLoggedIn") == null || !(boolean) session.getAttribute("isLoggedIn")) {
+		    // ログインしていない場合、ログインページにリダイレクト
+		    response.sendRedirect(request.getContextPath() + "/login");
+		    return; // 処理を終了
+		}
+		
+		
 		productDAO pDao = new productDAO();
 
 		try {

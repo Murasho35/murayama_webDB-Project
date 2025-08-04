@@ -6,10 +6,23 @@
 <head>
 <meta charset="UTF-8">
 <title>商品ページ</title>
+
+<style>
+.logout-button-container {
+	text-align: right;
+	margin-bottom: 20px;
+}
+</style>
+
 </head>
 <body>
 
-<h2>商品一覧</h2>
+	<div class="logout-button-container">
+		<input type="button" value="ログアウト"
+			onclick="location.href='${pageContext.request.contextPath}/logout'">
+	</div>
+
+	<h2>商品一覧</h2>
 
 	<c:if test="${empty productList}">
 		<p style="text-align: center;">登録されている商品はありません。</p>
@@ -36,24 +49,27 @@
 								<td>${product.productPrice}</td>
 								<td>${product.productStock}</td>
 								<td>${product.productCtgrName}</td>
+								<td><a
+									href="./productUpdate?action=edit&id=${product.productId}">
+										<button type="button">編集</button>
+								</a></td>
 								<td>
-                            <a href="./productUpdate?action=edit&id=${product.productId}">
-                                <button type="button">編集</button>
-                            </a>
-                        </td>
-                        <td>
-                            <form action="./productDelete" method="post" 
-                                  onsubmit="return confirm('本当に商品「${product.productName}」を削除しますか？');"
-                                  style="display:inline;"> 
-                                <input type="hidden" name="id" value="${product.productId}">
-                                <input type="submit" value="削除"> 
-                            </form>
-                        </td>
-                        
+									<form action="./productDelete" method="post"
+										onsubmit="return confirm('本当に商品「${product.productName}」を削除しますか？');"
+										style="display: inline;">
+										<input type="hidden" name="id" value="${product.productId}">
+										<input type="submit" value="削除">
+									</form>
+								</td>
+
 							</tr>
 						</c:forEach>
 					</tbody>
 				</table>
 				</c:if>
+				<div style="margin-top: 20px;">
+					<a href="<%=request.getContextPath()%>/productRegister">
+						<button type="button">商品登録ページへ</button>
+					</a>
 </body>
 </html>

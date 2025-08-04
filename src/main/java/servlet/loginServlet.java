@@ -42,10 +42,8 @@ public class loginServlet extends HttpServlet {
 				session.setAttribute("loggedInUserName", userName);
 				session.setAttribute("isLoggedIn", true);
 				
-				request.setAttribute("displayUserName", userName);
-				
-				// ログイン成功画面に遷移する
-				url = "loginSuccess.jsp";
+				response.sendRedirect(request.getContextPath() + "/productList");
+				return; 
 			} else {
 				
 				request.setAttribute("loginFailure", "ログインに失敗しました");
